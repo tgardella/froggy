@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Triathlon Frog Quest 🐸</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0d2b2b; font-family: 'Inter', sans-serif; color: #e8f5e9; min-height: 100vh; overflow-x: hidden; }
+    .display-font { font-family: 'Boogaloo', cursive; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0d2b2b; }
+    ::-webkit-scrollbar-thumb { background: #4caf50; border-radius: 3px; }
+
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    @keyframes swim { 0%,100%{transform:rotate(-5deg) translateX(0)} 50%{transform:rotate(5deg) translateX(6px)} }
+    @keyframes pedal { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg) translateY(-3px)} }
+    @keyframes hop { 0%,100%{transform:translateY(0) rotate(0deg)} 30%{transform:translateY(-14px) rotate(-8deg)} 60%{transform:translateY(-6px) rotate(4deg)} }
+    @keyframes countdown-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+    @keyframes slide-in { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    @keyframes fly-buzz { 0%,100%{transform:translate(0,0) rotate(0deg)} 25%{transform:translate(3px,-4px) rotate(10deg)} 50%{transform:translate(-2px,3px) rotate(-5deg)} 75%{transform:translate(4px,1px) rotate(8deg)} }
+    @keyframes lily-bob { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(3px) rotate(1deg)} }
+    @keyframes tongue-shoot { 0%{transform:scaleX(0);opacity:0} 30%{transform:scaleX(1);opacity:1} 70%{transform:scaleX(1);opacity:1} 100%{transform:scaleX(0);opacity:0} }
+    @keyframes fly-caught { 0%{transform:scale(1)} 50%{transform:scale(1.5) rotate(180deg)} 100%{transform:scale(0) rotate(360deg);opacity:0} }
+    @keyframes peek-in-left { 0%{transform:translateX(-120%)} 100%{transform:translateX(0)} }
+    @keyframes peek-out-left { 0%{transform:translateX(0)} 100%{transform:translateX(-120%)} }
+    @keyframes peek-in-right { 0%{transform:translateX(120%)} 100%{transform:translateX(0)} }
+    @keyframes peek-out-right { 0%{transform:translateX(0)} 100%{transform:translateX(120%)} }
+    @keyframes water-rise { 0%{transform:translateY(100%)} 100%{transform:translateY(0)} }
+    @keyframes bubble-up { 0%{transform:translateY(0);opacity:0.8} 100%{transform:translateY(-110vh);opacity:0} }
+    @keyframes water-drain { 0%{transform:translateY(0)} 100%{transform:translateY(100%)} }
+    @keyframes zoom-across { 0%{left:-150px} 100%{left:110vw} }
+    @keyframes screen-shake { 0%,100%{transform:translate(0,0)} 10%{transform:translate(-5px,2px)} 20%{transform:translate(5px,-2px)} 30%{transform:translate(-3px,3px)} 40%{transform:translate(3px,-1px)} 50%{transform:translate(-2px,2px)} 60%{transform:translate(2px,-3px)} 70%{transform:translate(-1px,1px)} 80%{transform:translate(1px,-2px)} 90%{transform:translate(-2px,1px)} }
+    @keyframes confetti-fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+    @keyframes badge-hero { 0%{transform:translateY(100px) scale(0);opacity:0} 60%{transform:translateY(-20px) scale(1.2)} 100%{transform:translateY(0) scale(1);opacity:1} }
+    @keyframes zzz { 0%{opacity:0;transform:translate(0,0) scale(0.5)} 50%{opacity:1} 100%{opacity:0;transform:translate(10px,-22px) scale(1.2)} }
+    @keyframes burp-text { 0%{transform:scale(0) rotate(-10deg);opacity:0} 20%{transform:scale(1.4) rotate(5deg);opacity:1} 80%{transform:scale(1.1) rotate(-2deg);opacity:1} 100%{transform:scale(0) rotate(10deg);opacity:0} }
+    @keyframes victory-lap { 0%{left:-80px;transform:scaleX(1)} 49%{left:calc(100% + 80px);transform:scaleX(1)} 50%{left:calc(100% + 80px);transform:scaleX(-1)} 100%{left:-80px;transform:scaleX(-1)} }
+    @keyframes party-frog { 0%{transform:translateY(100px);opacity:0} 30%{transform:translateY(-30px);opacity:1} 50%{transform:translateY(0)} 70%{transform:translateY(-15px)} 100%{transform:translateY(0)} }
+    @keyframes footprint-fade { 0%{opacity:1} 100%{opacity:0} }
+    @keyframes ripple { 0%{transform:scale(0.8);opacity:1} 100%{transform:scale(2.5);opacity:0} }
+
+    .float { animation: float 3s ease-in-out infinite; }
+    .swim-anim { animation: swim 1.2s ease-in-out infinite; }
+    .pedal-anim { animation: pedal 0.8s ease-in-out infinite; }
+    .hop-anim { animation: hop 0.9s ease-in-out infinite; }
+    .countdown-pulse { animation: countdown-pulse 2s ease-in-out infinite; }
+    .slide-in { animation: slide-in 0.4s ease-out; }
+
+    .card { background:#112e2e; border:1px solid #1e4a4a; border-radius:20px; padding:1.5rem; transition:border-color 0.2s; }
+    .card:hover { border-color:#84cc16; }
+    .progress-track { background:#1a3a3a; border-radius:99px; overflow:hidden; }
+    .progress-fill { height:100%; border-radius:99px; transition:width 1s cubic-bezier(.4,0,.2,1); }
+    .nav-btn { padding:0.5rem 1.2rem; border-radius:99px; border:2px solid transparent; font-family:'Boogaloo',cursive; font-size:1rem; cursor:pointer; transition:all 0.2s; background:transparent; color:#a3c4a3; }
+    .nav-btn.active { background:#84cc16; color:#0d2b2b; }
+    .nav-btn:hover:not(.active) { border-color:#84cc16; color:#84cc16; }
+    .badge { display:flex; flex-direction:column; align-items:center; gap:0.4rem; padding:0.8rem; border-radius:16px; border:2px solid transparent; transition:all 0.2s; position:relative; }
+    .badge.unlocked { background:#1a3a1a; border-color:#84cc16; }
+    .badge.locked { background:#0d1f1f; border-color:#1e4a4a; opacity:0.5; filter:grayscale(1); }
+    .badge:hover.unlocked { transform:scale(1.05); }
+    .xp-bar { height:8px; background:#1a3a3a; border-radius:99px; overflow:hidden; }
+    .xp-fill { height:100%; background:linear-gradient(90deg,#f59e0b,#fbbf24); border-radius:99px; }
+    .day-pill { padding:0.4rem 0.8rem; border-radius:99px; font-size:0.75rem; font-weight:600; border:1px solid #1e4a4a; background:#0d1f1f; }
+    .day-pill.done { background:#1a3a1a; border-color:#84cc16; color:#84cc16; }
+    .day-pill.today { background:#f59e0b22; border-color:#f59e0b; color:#f59e0b; }
+    .day-pill.rest { background:#1a2a3a; border-color:#3b5268; color:#5a7a9a; }
+    .toast { position:fixed; bottom:2rem; right:1rem; background:#1a4a1a; border:2px solid #84cc16; border-radius:16px; padding:1rem 1.5rem; max-width:280px; z-index:9999; animation:slide-in 0.4s ease-out; }
+    .strava-btn { background:#FC4C02; color:white; border:none; padding:0.8rem 1.8rem; border-radius:99px; font-family:'Boogaloo',cursive; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; gap:0.5rem; }
+
+    #game-area { position:relative; width:100%; height:220px; background:linear-gradient(180deg,#0a4a6e 0%,#0d7a5e 60%,#0a5a3e 100%); border-radius:20px; overflow:hidden; cursor:crosshair; user-select:none; border:2px solid #1e6a4a; }
+    .water-surface { position:absolute; bottom:0; left:0; right:0; height:70px; background:linear-gradient(180deg,rgba(13,122,94,0.6),rgba(10,74,62,0.9)); border-top:2px solid rgba(132,204,22,0.3); }
+    .lily-pad { position:absolute; bottom:55px; animation:lily-bob 3s ease-in-out infinite; }
+    .game-fly { position:absolute; cursor:pointer; font-size:1.4rem; animation:fly-buzz 0.8s ease-in-out infinite; z-index:5; }
+    .tongue { position:absolute; height:5px; background:linear-gradient(90deg,#dc2626,#f87171); border-radius:99px; transform-origin:left center; transform:scaleX(0); z-index:10; pointer-events:none; }
+    .tongue.shooting { animation:tongue-shoot 0.4s ease-out forwards; }
+    .score-pop { position:absolute; font-family:'Boogaloo',cursive; color:#84cc16; font-size:1.2rem; pointer-events:none; animation:bubble-up 1s ease-out forwards; z-index:20; }
+
+    .peek-frog { position:fixed; bottom:120px; z-index:998; display:flex; align-items:flex-end; }
+    .peek-frog.left { left:0; flex-direction:row; }
+    .peek-frog.right { right:0; flex-direction:row-reverse; }
+    .peek-frog.left.entering { animation:peek-in-left 0.6s cubic-bezier(.34,1.56,.64,1) forwards; }
+    .peek-frog.left.leaving { animation:peek-out-left 0.5s ease-in forwards; }
+    .peek-frog.right.entering { animation:peek-in-right 0.6s cubic-bezier(.34,1.56,.64,1) forwards; }
+    .peek-frog.right.leaving { animation:peek-out-right 0.5s ease-in forwards; }
+    .speech-bubble { background:#1a4a1a; border:2px solid #84cc16; border-radius:12px; padding:0.5rem 0.8rem; max-width:160px; font-family:'Boogaloo',cursive; font-size:0.88rem; color:#84cc16; position:relative; margin-bottom:20px; line-height:1.3; }
+    .speech-bubble.left-side::after { content:''; position:absolute; bottom:-10px; left:12px; width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-top:10px solid #84cc16; }
+    .speech-bubble.right-side::after { content:''; position:absolute; bottom:-10px; right:12px; width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-top:10px solid #84cc16; }
+
+    .water-flood { position:fixed; top:0;left:0;right:0;bottom:0; z-index:9990; pointer-events:none; overflow:hidden; }
+    .flood-fill { position:absolute; bottom:0;left:0;right:0; height:100%; background:linear-gradient(180deg,rgba(59,130,246,0.85),rgba(13,74,110,0.95)); animation:water-rise 1.5s ease-out forwards; }
+    .flood-drain { animation:water-drain 1s ease-in forwards; animation-delay:1.8s; }
+    .bubble { position:absolute; border-radius:50%; background:rgba(255,255,255,0.3); animation:bubble-up linear forwards; }
+
+    .bike-zoom { position:fixed; bottom:80px; z-index:9995; pointer-events:none; animation:zoom-across 1.8s linear forwards; }
+    .footprint { position:fixed; font-size:1.2rem; z-index:9994; pointer-events:none; animation:footprint-fade 2s ease-out forwards; }
+    .confetti-piece { position:fixed; border-radius:2px; pointer-events:none; z-index:9998; animation:confetti-fall linear forwards; }
+    .sleep-frog { position:fixed; bottom:20px; right:20px; z-index:997; }
+    .zzz-el { position:absolute; font-family:'Boogaloo',cursive; color:#84cc16; animation:zzz 1.5s ease-out infinite; }
+    .party-overlay { position:fixed; top:0;left:0;right:0;bottom:0; z-index:9993; pointer-events:none; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .victory-frog-el { position:fixed; bottom:70px; z-index:9996; pointer-events:none; animation:victory-lap 2.5s linear forwards; }
+    .milestone-modal { position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.75); z-index:9997; display:flex; align-items:center; justify-content:center; }
+    .milestone-card { background:#112e2e; border:3px solid #84cc16; border-radius:24px; padding:2rem; text-align:center; max-width:300px; margin:1rem; animation:badge-hero 0.6s cubic-bezier(.34,1.56,.64,1) forwards; }
+    .burp-overlay { position:fixed; top:0;left:0;right:0;bottom:0; display:flex; align-items:center; justify-content:center; z-index:9999; pointer-events:none; }
+    .burp-text { font-family:'Boogaloo',cursive; font-size:4.5rem; color:#84cc16; text-shadow:0 0 40px #84cc16, 0 0 80px #22c55e; animation:burp-text 2.2s ease-out forwards; text-align:center; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const RACE_DATE = new Date('2024-12-01');
+const CONFETTI_COLORS = ['#84cc16','#f59e0b','#ef4444','#3b82f6','#a855f7','#ec4899','#22c55e','#ffffff'];
+const PEEK_LINES = [
+  "Ribbit.", "Hop to it!", "Frogs rule, bugs drool.",
+  "Back in my tadpole days I could jump 8 inches.",
+  "Have you hydrated? Frogs absorb water through their skin. Just saying.",
+  "I believe in you. Mostly.", "Less scrolling, more training.",
+  "Did someone say... FLY? 👅", "The lily pad won't train itself.",
+  "You miss 100% of the swims you don't swim. — Frog Gretzky",
+  "My cousin ran a 5k once. He didn't train. Don't be my cousin.",
+  "Ribbit ribbit ribbit. That means 'go faster' in frog.",
+  "I've seen tadpoles work harder. Just kidding. You're doing great.",
+];
+const FUN_MESSAGES = [
+  "🐸 Ribbit! Your legs aren't tired, they're just pretending.",
+  "🐸 Even frogs gotta get off the lily pad sometimes.",
+  "🐸 You're not slow, you're just... building suspense.",
+  "🐸 Every swim stroke is one less stroke of regret on race day.",
+  "🐸 Your future self is watching. Don't embarrass him.",
+  "🐸 The couch called. You didn't answer. Legend.",
+  "🐸 Leap first, think later. That's the frog way.",
+  "🐸 Fun fact: frogs never quit. Coincidence? We think not.",
+];
+const MILESTONES_DATA = [
+  { id:1, emoji:'🐣', label:'First Splash', desc:'Completed first swim session', unlocked:true },
+  { id:2, emoji:'🚴', label:'Wheel Deal', desc:'First 30km bike ride', unlocked:true },
+  { id:3, emoji:'👟', label:'Hop Hop!', desc:'First 10km run', unlocked:true },
+  { id:4, emoji:'🏊', label:'Aqua Frog', desc:'Swam 1km non-stop', unlocked:true },
+  { id:5, emoji:'⚡', label:'Ribbit Rocket', desc:'First brick workout done', unlocked:false },
+  { id:6, emoji:'🌙', label:'Night Hopper', desc:'Trained 3 days in a row', unlocked:false },
+  { id:7, emoji:'🏆', label:'Half King', desc:'Completed a mock half distance', unlocked:false },
+  { id:8, emoji:'🔥', label:'On Fire Frog', desc:'10 weeks of training done', unlocked:false },
+];
+const WEEKS = [
+  { week:1, phase:'Base', swim:2, bike:2, run:2, done:true },
+  { week:2, phase:'Base', swim:2.5, bike:2.5, run:2.5, done:true },
+  { week:3, phase:'Base', swim:3, bike:3, run:3, done:true },
+  { week:4, phase:'Base Recovery 🔄', swim:2, bike:2, run:2, done:true, recovery:true },
+  { week:5, phase:'Build', swim:3, bike:4, run:3, done:false, current:true },
+  { week:6, phase:'Build', swim:3.5, bike:4.5, run:3.5, done:false },
+  { week:7, phase:'Build', swim:4, bike:5, run:4, done:false },
+  { week:8, phase:'Build Recovery 🔄', swim:2.5, bike:3, run:2.5, done:false, recovery:true },
+];
+const THIS_WEEK = {
+  targets:{ swim:3, bike:4, run:3 },
+  logged:{ swim:1.8, bike:2.4, run:1.2 },
+  days:[
+    {day:'Mon',type:'swim',done:true},{day:'Tue',type:'bike',done:true},
+    {day:'Wed',type:'run',done:true},{day:'Thu',type:'rest',done:false},
+    {day:'Fri',type:'swim+run',done:false,today:true},{day:'Sat',type:'bike',done:false},
+    {day:'Sun',type:'rest',done:false},
+  ]
+};
+
+// ── SVGs ──
+const SwimFrog = ({ size=80 }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" className="swim-anim">
+    <ellipse cx="50" cy="78" rx="35" ry="8" fill="#0d4a6e" opacity="0.5"/>
+    <ellipse cx="50" cy="60" rx="22" ry="18" fill="#22c55e"/>
+    <circle cx="50" cy="38" r="18" fill="#22c55e"/>
+    <circle cx="42" cy="32" r="7" fill="white"/><circle cx="58" cy="32" r="7" fill="white"/>
+    <circle cx="43" cy="32" r="4" fill="#1a1a1a"/><circle cx="59" cy="32" r="4" fill="#1a1a1a"/>
+    <circle cx="44" cy="31" r="1.5" fill="white"/><circle cx="60" cy="31" r="1.5" fill="white"/>
+    <path d="M35 32 Q50 26 65 32" stroke="#f59e0b" strokeWidth="2.5" fill="none"/>
+    <ellipse cx="50" cy="28" rx="17" ry="10" fill="#3b82f6" opacity="0.85"/>
+    <path d="M28 58 Q15 50 10 60" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none"/>
+    <path d="M72 58 Q85 50 90 60" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none"/>
+    <path d="M42 76 Q38 88 30 85" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none"/>
+    <path d="M58 76 Q62 88 70 85" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none"/>
+    <path d="M43 43 Q50 48 57 43" stroke="#15803d" strokeWidth="2" fill="none" strokeLinecap="round"/>
+  </svg>
+);
+const BikeFrog = ({ size=80 }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" className="pedal-anim">
+    <line x1="20" y1="75" x2="50" y2="55" stroke="#64748b" strokeWidth="3"/>
+    <line x1="50" y1="55" x2="80" y2="75" stroke="#64748b" strokeWidth="3"/>
+    <line x1="50" y1="55" x2="50" y2="75" stroke="#64748b" strokeWidth="3"/>
+    <line x1="35" y1="65" x2="65" y2="65" stroke="#64748b" strokeWidth="2.5"/>
+    <circle cx="20" cy="75" r="14" fill="none" stroke="#475569" strokeWidth="3"/>
+    <circle cx="80" cy="75" r="14" fill="none" stroke="#475569" strokeWidth="3"/>
+    <circle cx="20" cy="75" r="3" fill="#64748b"/><circle cx="80" cy="75" r="3" fill="#64748b"/>
+    <line x1="50" y1="55" x2="62" y2="50" stroke="#64748b" strokeWidth="3"/>
+    <circle cx="50" cy="67" r="4" fill="#94a3b8"/>
+    <line x1="44" y1="67" x2="56" y2="67" stroke="#94a3b8" strokeWidth="3"/>
+    <ellipse cx="52" cy="48" rx="14" ry="11" fill="#22c55e"/>
+    <circle cx="58" cy="35" r="14" fill="#22c55e"/>
+    <ellipse cx="58" cy="28" rx="13" ry="8" fill="#f59e0b"/>
+    <circle cx="53" cy="34" r="5" fill="white"/><circle cx="63" cy="34" r="5" fill="white"/>
+    <circle cx="54" cy="34" r="3" fill="#1a1a1a"/><circle cx="64" cy="34" r="3" fill="#1a1a1a"/>
+    <circle cx="55" cy="33" r="1" fill="white"/><circle cx="65" cy="33" r="1" fill="white"/>
+    <path d="M53 40 Q58 44 63 40" stroke="#15803d" strokeWidth="2" fill="none" strokeLinecap="round"/>
+    <line x1="52" y1="55" x2="46" y2="67" stroke="#16a34a" strokeWidth="4" strokeLinecap="round"/>
+    <line x1="52" y1="55" x2="54" y2="67" stroke="#16a34a" strokeWidth="4" strokeLinecap="round"/>
+  </svg>
+);
+const RunFrog = ({ size=80 }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" className="hop-anim">
+    <ellipse cx="50" cy="90" rx="18" ry="5" fill="#000" opacity="0.2"/>
+    <ellipse cx="50" cy="55" rx="18" ry="16" fill="#22c55e"/>
+    <circle cx="50" cy="36" r="16" fill="#22c55e"/>
+    <rect x="35" y="29" width="30" height="7" rx="3.5" fill="#ef4444"/>
+    <circle cx="43" cy="33" r="6" fill="white"/><circle cx="57" cy="33" r="6" fill="white"/>
+    <circle cx="44" cy="33" r="3.5" fill="#1a1a1a"/><circle cx="58" cy="33" r="3.5" fill="#1a1a1a"/>
+    <circle cx="45" cy="32" r="1.2" fill="white"/><circle cx="59" cy="32" r="1.2" fill="white"/>
+    <path d="M44 41 Q50 45 56 41" stroke="#15803d" strokeWidth="2" fill="none" strokeLinecap="round"/>
+    <path d="M34 52 Q22 44 18 50" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none"/>
+    <path d="M66 52 Q78 44 82 50" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none"/>
+    <path d="M42 68 Q35 80 28 85" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none"/>
+    <path d="M58 68 Q68 75 72 72" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none"/>
+    <ellipse cx="26" cy="86" rx="8" ry="4" fill="#3b82f6"/>
+    <ellipse cx="73" cy="73" rx="8" ry="4" fill="#3b82f6" transform="rotate(-20 73 73)"/>
+    <line x1="10" y1="48" x2="20" y2="48" stroke="#84cc16" strokeWidth="2" opacity="0.6" strokeLinecap="round"/>
+  </svg>
+);
+const VictoryFrogSVG = () => (
+  <svg width="70" height="70" viewBox="0 0 100 100">
+    <ellipse cx="50" cy="70" rx="22" ry="18" fill="#22c55e"/>
+    <circle cx="50" cy="42" r="20" fill="#22c55e"/>
+    <circle cx="41" cy="36" r="8" fill="white"/><circle cx="59" cy="36" r="8" fill="white"/>
+    <circle cx="42" cy="36" r="4.5" fill="#1a1a1a"/><circle cx="60" cy="36" r="4.5" fill="#1a1a1a"/>
+    <circle cx="43" cy="35" r="1.8" fill="white"/><circle cx="61" cy="35" r="1.8" fill="white"/>
+    <path d="M42 50 Q50 56 58 50" stroke="#15803d" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+    <path d="M30 58 Q18 40 15 25" stroke="#16a34a" strokeWidth="6" strokeLinecap="round" fill="none"/>
+    <path d="M70 58 Q82 40 85 25" stroke="#16a34a" strokeWidth="6" strokeLinecap="round" fill="none"/>
+    <circle cx="15" cy="22" r="5" fill="#16a34a"/><circle cx="85" cy="22" r="5" fill="#16a34a"/>
+  </svg>
+);
+const PeekFrogSVG = ({ flipped }) => (
+  <svg width="65" height="65" viewBox="0 0 100 100" style={{transform:flipped?'scaleX(-1)':'none',flexShrink:0}}>
+    <ellipse cx="50" cy="70" rx="25" ry="20" fill="#22c55e"/>
+    <circle cx="50" cy="42" r="22" fill="#22c55e"/>
+    <circle cx="40" cy="35" r="9" fill="white"/><circle cx="62" cy="35" r="9" fill="white"/>
+    <circle cx="41" cy="35" r="5" fill="#1a1a1a"/><circle cx="63" cy="35" r="5" fill="#1a1a1a"/>
+    <circle cx="42" cy="34" r="2" fill="white"/><circle cx="64" cy="34" r="2" fill="white"/>
+    <path d="M40 50 Q50 56 60 50" stroke="#15803d" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+    <path d="M30 62 Q18 68 14 78" stroke="#16a34a" strokeWidth="6" strokeLinecap="round" fill="none"/>
+    <path d="M70 62 Q82 68 86 78" stroke="#16a34a" strokeWidth="6" strokeLinecap="round" fill="none"/>
+  </svg>
+);
+const SleepFrogSVG = () => (
+  <svg width="55" height="55" viewBox="0 0 100 100">
+    <ellipse cx="50" cy="70" rx="25" ry="18" fill="#22c55e"/>
+    <circle cx="50" cy="45" r="22" fill="#22c55e"/>
+    <path d="M36 38 Q40 42 44 38" stroke="#1a1a1a" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+    <path d="M56 38 Q60 42 64 38" stroke="#1a1a1a" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+    <ellipse cx="50" cy="56" rx="4" ry="2.5" fill="#15803d" opacity="0.5"/>
+  </svg>
+);
+const PartyFrogSVG = () => (
+  <svg width="90" height="90" viewBox="0 0 100 100">
+    <ellipse cx="50" cy="75" rx="24" ry="18" fill="#22c55e"/>
+    <circle cx="50" cy="44" r="22" fill="#22c55e"/>
+    <ellipse cx="50" cy="30" rx="20" ry="12" fill="#a855f7" opacity="0.9"/>
+    <circle cx="41" cy="38" r="8" fill="white"/><circle cx="59" cy="38" r="8" fill="white"/>
+    <circle cx="42" cy="38" r="4.5" fill="#1a1a1a"/><circle cx="60" cy="38" r="4.5" fill="#1a1a1a"/>
+    <circle cx="43" cy="37" r="2" fill="white"/><circle cx="61" cy="37" r="2" fill="white"/>
+    <path d="M41 52 Q50 60 59 52" stroke="#15803d" strokeWidth="3" fill="none" strokeLinecap="round"/>
+    <path d="M28 60 Q16 42 20 28" stroke="#16a34a" strokeWidth="6" strokeLinecap="round" fill="none"/>
+    <path d="M72 60 Q84 42 80 28" stroke="#16a34a" strokeWidth="6" strokeLinecap="round" fill="none"/>
+  </svg>
+);
+
+const ProgressArc = ({ pct, color, size=80 }) => {
+  const r=34, circ=2*Math.PI*r, dash=(pct/100)*circ;
+  return (
+    <svg width={size} height={size} viewBox="0 0 80 80">
+      <circle cx="40" cy="40" r={r} fill="none" stroke="#1a3a3a" strokeWidth="7"/>
+      <circle cx="40" cy="40" r={r} fill="none" stroke={color} strokeWidth="7"
+        strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
+        transform="rotate(-90 40 40)" style={{transition:'stroke-dasharray 1.2s ease'}}/>
+      <text x="40" y="44" textAnchor="middle" fill={color}
+        style={{fontSize:'14px',fontFamily:'Boogaloo,cursive'}}>{pct}%</text>
+    </svg>
+  );
+};
+
+// ── Lily Pad Game ──
+const LilyPadGame = ({ onBurp }) => {
+  const [flies, setFlies] = useState([]);
+  const [score, setScore] = useState(0);
+  const [pops, setPops] = useState([]);
+  const [tongue, setTongue] = useState(null);
+  const flyIdRef = useRef(0);
+  const totalRef = useRef(0);
+  const gameRef = useRef(null);
+
+  useEffect(() => {
+    const spawn = () => {
+      const id = ++flyIdRef.current;
+      const x = 8 + Math.random() * 78;
+      const y = 5 + Math.random() * 48;
+      const life = 2500 + Math.random() * 2500;
+      setFlies(f => [...f.slice(-5), { id, x, y, speed: 0.5 + Math.random() * 0.8 }]);
+      setTimeout(() => setFlies(f => f.filter(fl => fl.id !== id)), life);
+    };
+    spawn();
+    const iv = setInterval(spawn, 2000);
+    return () => clearInterval(iv);
+  }, []);
+
+  const catchFly = (fly) => {
+    const frogX = 50, frogY = 62;
+    const angle = Math.atan2(fly.y - frogY, fly.x - frogX) * 180 / Math.PI;
+    const dist = Math.hypot(fly.x - frogX, fly.y - frogY);
+    setTongue({ angle, dist, x: frogX, y: frogY });
+    setTimeout(() => setTongue(null), 450);
+    setFlies(f => f.filter(fl => fl.id !== fly.id));
+    setScore(s => s + 1);
+    totalRef.current += 1;
+    const pid = Date.now();
+    setPops(p => [...p, { id: pid, x: fly.x, y: fly.y }]);
+    setTimeout(() => setPops(p => p.filter(pp => pp.id !== pid)), 1000);
+    if (totalRef.current % 5 === 0) setTimeout(onBurp, 500);
+  };
+
+  return (
+    <div id="game-area" ref={gameRef}>
+      <div style={{position:'absolute',top:10,left:14,color:'rgba(255,255,255,0.35)',fontSize:'0.7rem',fontFamily:'Boogaloo,cursive'}}>tap the flies!</div>
+      <div style={{position:'absolute',top:8,right:12,fontFamily:'Boogaloo,cursive',color:'#84cc16',fontSize:'1rem'}}>🪰 {score}</div>
+      <div className="water-surface"/>
+      <div className="lily-pad" style={{left:'calc(50% - 45px)'}}>
+        <svg width="90" height="40" viewBox="0 0 90 40">
+          <ellipse cx="45" cy="28" rx="42" ry="16" fill="#16a34a"/>
+          <ellipse cx="45" cy="26" rx="40" ry="14" fill="#22c55e"/>
+          <path d="M45 12 L45 4 L38 10 Z" fill="#16a34a"/>
+          <ellipse cx="45" cy="24" rx="28" ry="9" fill="#4ade80" opacity="0.4"/>
+        </svg>
+        <div style={{position:'absolute',top:-52,left:'50%',transform:'translateX(-50%)'}}>
+          <svg width="60" height="60" viewBox="0 0 100 100" className="float">
+            <ellipse cx="50" cy="72" rx="20" ry="14" fill="#22c55e"/>
+            <circle cx="50" cy="48" r="20" fill="#22c55e"/>
+            <circle cx="40" cy="42" r="8" fill="white"/><circle cx="60" cy="42" r="8" fill="white"/>
+            <circle cx="41" cy="42" r="4.5" fill="#1a1a1a"/><circle cx="61" cy="42" r="4.5" fill="#1a1a1a"/>
+            <circle cx="42" cy="41" r="1.8" fill="white"/><circle cx="62" cy="41" r="1.8" fill="white"/>
+            <path d="M43 56 Q50 60 57 56" stroke="#15803d" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+            <path d="M32 65 Q24 76 18 80" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none"/>
+            <path d="M68 65 Q76 76 82 80" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none"/>
+          </svg>
+        </div>
+      </div>
+      {tongue && (
+        <div className="tongue shooting" style={{
+          left:`${tongue.x}%`, top:`${tongue.y}%`,
+          width:`${tongue.dist * 1.1}px`,
+          transform:`rotate(${tongue.angle}deg)`,
+        }}/>
+      )}
+      {flies.map(fly => (
+        <div key={fly.id} className="game-fly"
+          style={{left:`${fly.x}%`,top:`${fly.y}%`,animationDuration:`${fly.speed}s`}}
+          onClick={() => catchFly(fly)}>🪰</div>
+      ))}
+      {pops.map(p => (
+        <div key={p.id} className="score-pop" style={{left:`${p.x}%`,top:`${p.y}%`}}>+1</div>
+      ))}
+      {totalRef.current > 0 && totalRef.current % 5 !== 0 && (
+        <div style={{position:'absolute',bottom:76,right:10,fontSize:'0.68rem',color:'rgba(132,204,22,0.6)',fontFamily:'Boogaloo,cursive'}}>
+          {5-(totalRef.current%5)} to burp 💨
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Peekaboo Frog ──
+const PeekabooFrog = () => {
+  const [state, setState] = useState(null);
+  useEffect(() => {
+    const trigger = () => {
+      const side = Math.random() > 0.5 ? 'left' : 'right';
+      const line = PEEK_LINES[Math.floor(Math.random() * PEEK_LINES.length)];
+      setState({ side, line, phase: 'entering' });
+      setTimeout(() => setState(s => s ? {...s, phase:'leaving'} : s), 3500);
+      setTimeout(() => setState(null), 4100);
+    };
+    const t1 = setTimeout(trigger, 9000);
+    const iv = setInterval(trigger, 20000 + Math.random() * 10000);
+    return () => { clearTimeout(t1); clearInterval(iv); };
+  }, []);
+  if (!state) return null;
+  return (
+    <div className={`peek-frog ${state.side} ${state.phase}`}>
+      {state.side === 'left' && <PeekFrogSVG flipped={false}/>}
+      <div className={`speech-bubble ${state.side === 'left' ? 'left-side' : 'right-side'}`}>{state.line}</div>
+      {state.side === 'right' && <PeekFrogSVG flipped={true}/>}
+    </div>
+  );
+};
+
+// ── Water Flood ──
+const WaterFlood = ({ onDone }) => {
+  const [draining, setDraining] = useState(false);
+  const bubbles = Array.from({length:16}, (_,i) => ({
+    id:i, x:5+Math.random()*90, size:8+Math.random()*18,
+    dur:1.5+Math.random()*2, delay:Math.random()*1.5,
+    bot:10+Math.random()*70
+  }));
+  useEffect(() => {
+    setTimeout(() => setDraining(true), 2200);
+    setTimeout(onDone, 3400);
+  }, []);
+  return (
+    <div className="water-flood">
+      <div className={`flood-fill${draining?' flood-drain':''}`}>
+        {bubbles.map(b => (
+          <div key={b.id} className="bubble" style={{
+            left:`${b.x}%`, bottom:`${b.bot}%`,
+            width:b.size, height:b.size,
+            animationDuration:`${b.dur}s`, animationDelay:`${b.delay}s`
+          }}/>
+        ))}
+      </div>
+      <div className="victory-frog-el">
+        <VictoryFrogSVG/>
+      </div>
+    </div>
+  );
+};
+
+// ── Bike Zoom ──
+const BikeZoom = ({ onDone }) => {
+  useEffect(() => { setTimeout(onDone, 2200); }, []);
+  return (
+    <div className="bike-zoom" style={{display:'flex',alignItems:'center',gap:'0.6rem',whiteSpace:'nowrap'}}>
+      <span style={{fontFamily:'Boogaloo,cursive',color:'#f59e0b',fontSize:'1.6rem'}}>WHOOOOSH 💨</span>
+      <BikeFrog size={80}/>
+    </div>
+  );
+};
+
+// ── Run Celebration ──
+const RunCelebration = ({ onDone }) => {
+  const prints = Array.from({length:8}, (_,i) => ({
+    id:i, x:8+i*12, y:25+Math.sin(i*0.9)*25, delay:i*0.15, flip:i%2===0
+  }));
+  useEffect(() => { setTimeout(onDone, 2800); }, []);
+  return (
+    <>
+      <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,animation:'screen-shake 0.6s ease-out',pointerEvents:'none',zIndex:9988}}/>
+      {prints.map(p => (
+        <div key={p.id} className="footprint" style={{
+          left:`${p.x}%`,top:`${p.y}%`,
+          transform:`scaleX(${p.flip?-1:1})`,
+          animationDelay:`${p.delay}s`, animationDuration:'2.2s'
+        }}>👣</div>
+      ))}
+    </>
+  );
+};
+
+// ── Badge Celebration ──
+const BadgeCelebration = ({ badge, onDone }) => {
+  const pieces = Array.from({length:45}, (_,i) => ({
+    id:i, x:Math.random()*100, color:CONFETTI_COLORS[i%CONFETTI_COLORS.length],
+    delay:Math.random()*0.5, dur:1.5+Math.random()*1.5, size:6+Math.random()*10, rot:Math.random()*360
+  }));
+  useEffect(() => { setTimeout(onDone, 3200); }, []);
+  return (
+    <>
+      {pieces.map(p => (
+        <div key={p.id} className="confetti-piece" style={{
+          left:`${p.x}%`, top:'-20px', background:p.color,
+          width:p.size, height:p.size, animationDelay:`${p.delay}s`,
+          animationDuration:`${p.dur}s`, transform:`rotate(${p.rot}deg)`,
+          borderRadius:Math.random()>0.5?'50%':'2px'
+        }}/>
+      ))}
+      <div className="milestone-modal" onClick={onDone}>
+        <div className="milestone-card">
+          <div style={{fontSize:'4rem',marginBottom:'0.5rem'}}>{badge?.emoji||'🏆'}</div>
+          <div className="display-font" style={{color:'#84cc16',fontSize:'1.5rem'}}>{badge?.label||'Achievement!'}</div>
+          <div style={{color:'#a3c4a3',fontSize:'0.85rem',margin:'0.5rem 0'}}>{badge?.desc||'You did it!'}</div>
+          <div style={{color:'#5a8a6a',fontSize:'0.75rem'}}>tap to close</div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+// ── Party Overlay ──
+const PartyOverlay = ({ onDone }) => {
+  const pieces = Array.from({length:60}, (_,i) => ({
+    id:i, x:Math.random()*100, color:CONFETTI_COLORS[i%CONFETTI_COLORS.length],
+    delay:Math.random()*0.8, dur:2+Math.random()*2, size:8+Math.random()*12
+  }));
+  useEffect(() => { setTimeout(onDone, 4500); }, []);
+  return (
+    <div className="party-overlay" onClick={onDone}>
+      {pieces.map(p => (
+        <div key={p.id} className="confetti-piece" style={{
+          left:`${p.x}%`,top:'-20px',background:p.color,
+          width:p.size,height:p.size,
+          animationDelay:`${p.delay}s`,animationDuration:`${p.dur}s`,
+          borderRadius:Math.random()>0.5?'50%':'2px'
+        }}/>
+      ))}
+      <div style={{textAlign:'center',padding:'1rem',zIndex:2}}>
+        <div style={{animation:'party-frog 1s cubic-bezier(.34,1.56,.64,1) forwards'}}><PartyFrogSVG/></div>
+        <div className="display-font" style={{fontSize:'2.2rem',color:'#84cc16',marginTop:'0.5rem',textShadow:'0 0 30px #84cc16'}}>
+          HALFWAY THERE! 🎉
+        </div>
+        <div style={{color:'#a3c4a3',marginTop:'0.3rem'}}>You absolute legend of a frog 🐸</div>
+        <div style={{color:'#5a8a6a',fontSize:'0.8rem',marginTop:'0.5rem'}}>tap to close</div>
+      </div>
+    </div>
+  );
+};
+
+// ── Burp ──
+const BurpOverlay = ({ onDone }) => {
+  useEffect(() => { setTimeout(onDone, 2400); }, []);
+  return (
+    <div className="burp-overlay">
+      <div className="burp-text">BUURRRP!<br/>🐸💨</div>
+    </div>
+  );
+};
+
+// ── Sleep Frog ──
+const SleepFrog = () => {
+  const [asleep, setAsleep] = useState(false);
+  const timerRef = useRef(null);
+  const resetTimer = useCallback(() => {
+    setAsleep(false);
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setAsleep(true), 14000);
+  }, []);
+  useEffect(() => {
+    resetTimer();
+    ['mousemove','touchstart','click','keydown'].forEach(e => window.addEventListener(e, resetTimer));
+    return () => {
+      clearTimeout(timerRef.current);
+      ['mousemove','touchstart','click','keydown'].forEach(e => window.removeEventListener(e, resetTimer));
+    };
+  }, [resetTimer]);
+  if (!asleep) return null;
+  return (
+    <div className="sleep-frog">
+      <div style={{position:'relative'}}>
+        <SleepFrogSVG/>
+        <div className="zzz-el" style={{top:-8,right:-4,fontSize:'0.9rem'}}>z</div>
+        <div className="zzz-el" style={{top:-20,right:-10,fontSize:'1.1rem',animationDelay:'0.5s'}}>z</div>
+        <div className="zzz-el" style={{top:-34,right:-16,fontSize:'1.4rem',animationDelay:'1s'}}>z</div>
+      </div>
+    </div>
+  );
+};
+
+// ── Main App ──
+const App = () => {
+  const [tab, setTab] = useState('dashboard');
+  const [toast, setToast] = useState(null);
+  const [celebration, setCelebration] = useState(null);
+  const [celebData, setCelebData] = useState(null);
+  const [milestones, setMilestones] = useState(MILESTONES_DATA);
+  const [customGoals, setCustomGoals] = useState([
+    {id:'c1',emoji:'🌅',label:'First 6am Workout',desc:'Train before 7am',done:false},
+    {id:'c2',emoji:'🏖️',label:'Open Water Swim',desc:'Swim in open water (not a pool)',done:false},
+  ]);
+  const [newGoal, setNewGoal] = useState({emoji:'🎯',label:'',desc:''});
+  const [addingGoal, setAddingGoal] = useState(false);
+  const [ripples, setRipples] = useState({});
+
+  const days = Math.max(0, Math.ceil((RACE_DATE - new Date()) / 86400000));
+  const weeks = Math.floor(days/7), rem = days%7;
+  const swimPct=58, bikePct=40, runPct=35;
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 4000);
+  };
+
+  const trigger = (type, data=null) => { setCelebration(type); setCelebData(data); };
+
+  const handleFrogClick = (key) => {
+    setRipples(r => ({...r, [key]: Date.now()}));
+    showToast(FUN_MESSAGES[Math.floor(Math.random()*FUN_MESSAGES.length)]);
+    setTimeout(() => setRipples(r => ({...r, [key]: null})), 1000);
+  };
+
+  const logWorkout = (type) => {
+    if(type==='swim') trigger('swim');
+    else if(type==='bike') trigger('bike');
+    else if(type==='run') trigger('run');
+    showToast(`🐸 ${type.charAt(0).toUpperCase()+type.slice(1)} logged! The frog is proud.`);
+  };
+
+  const unlockBadge = (id) => {
+    const m = milestones.find(x=>x.id===id);
+    if(m&&!m.unlocked){
+      setMilestones(ms => ms.map(x=>x.id===id?{...x,unlocked:true}:x));
+      setTimeout(()=>trigger('badge',m),200);
+    }
+  };
+
+  const toggleGoal = (id) => {
+    const g = customGoals.find(x=>x.id===id);
+    setCustomGoals(gs => gs.map(g=>g.id===id?{...g,done:!g.done}:g));
+    if(g&&!g.done) showToast(`🐸 "${g.label}" — DONE! Absolute frog energy.`);
+  };
+
+  const addGoal = () => {
+    if(!newGoal.label.trim()) return;
+    setCustomGoals(gs=>[...gs,{...newGoal,id:'c'+Date.now(),done:false}]);
+    setNewGoal({emoji:'🎯',label:'',desc:''});
+    setAddingGoal(false);
+    showToast('🐸 New goal added. The frog is watching.');
+  };
+
+  return (
+    <div style={{maxWidth:480,margin:'0 auto',padding:'1rem',minHeight:'100vh'}}>
+
+      {/* Header */}
+      <div style={{textAlign:'center',padding:'1.5rem 0 1rem'}}>
+        <div className="display-font" style={{fontSize:'2rem',color:'#84cc16',letterSpacing:1}}>🐸 Frog Quest</div>
+        <div style={{fontSize:'0.8rem',color:'#5a8a6a',marginTop:2}}>Half Ironman Training Tracker</div>
+        <button className="strava-btn" onClick={()=>showToast('🔌 Strava coming soon! Activities will auto-sync.')}
+          style={{margin:'0.8rem auto 0',justifyContent:'center'}}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+          </svg>
+          Connect Strava
+        </button>
+      </div>
+
+      {/* Nav */}
+      <div style={{display:'flex',gap:'0.5rem',marginBottom:'1.2rem',justifyContent:'center',flexWrap:'wrap'}}>
+        {[['dashboard','🏠 Home'],['training','📅 Plan'],['milestones','🏆 Badges'],['stats','📊 Stats']].map(([t,label])=>(
+          <button key={t} className={`nav-btn ${tab===t?'active':''}`} onClick={()=>setTab(t)}>{label}</button>
+        ))}
+      </div>
+
+      {/* ── DASHBOARD ── */}
+      {tab==='dashboard' && (
+        <div className="slide-in" style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+          <div>
+            <div className="display-font" style={{color:'#5a8a6a',fontSize:'0.8rem',letterSpacing:1,textTransform:'uppercase',marginBottom:'0.5rem'}}>
+              🪰 Catch the flies while you wait
+            </div>
+            <LilyPadGame onBurp={()=>trigger('burp')}/>
+          </div>
+
+          <div className="card countdown-pulse" style={{background:'linear-gradient(135deg,#0d2b2b,#1a3a1a)',border:'2px solid #84cc16',textAlign:'center',padding:'2rem 1.5rem'}}>
+            <div style={{color:'#5a8a6a',fontSize:'0.8rem',marginBottom:4,fontWeight:600,letterSpacing:2,textTransform:'uppercase'}}>Race Day Countdown</div>
+            <div className="display-font" style={{fontSize:'3.8rem',color:'#84cc16',lineHeight:1}}>{days}</div>
+            <div style={{color:'#a3c4a3',fontSize:'1rem'}}>days to go</div>
+            <div style={{color:'#5a8a6a',fontSize:'0.82rem',marginTop:4}}>{weeks} weeks + {rem} days · Dec 1, 2024</div>
+            <div style={{marginTop:'1rem',display:'flex',justifyContent:'center',gap:'0.8rem',flexWrap:'wrap'}}>
+              {['🏊 1.9km','🚴 90km','🏃 21.1km'].map(d=>(
+                <div key={d} style={{fontSize:'0.75rem',color:'#84cc16',background:'#1a3a1a',padding:'0.3rem 0.7rem',borderRadius:99,border:'1px solid #2a5a2a'}}>{d}</div>
+              ))}
+            </div>
+          </div>
+
+          <div className="card">
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.8rem'}}>
+              <div>
+                <div className="display-font" style={{fontSize:'1.1rem',color:'#e8f5e9'}}>Overall Quest Progress</div>
+                <div style={{fontSize:'0.8rem',color:'#5a8a6a'}}>Week 5 of 20 · Build Phase</div>
+              </div>
+              <div className="display-font" style={{fontSize:'2rem',color:'#84cc16'}}>22%</div>
+            </div>
+            <div className="progress-track" style={{height:14}}>
+              <div className="progress-fill" style={{width:'22%',background:'linear-gradient(90deg,#16a34a,#84cc16)'}}/>
+            </div>
+            <div style={{display:'flex',justifyContent:'space-between',marginTop:'0.5rem',fontSize:'0.72rem',color:'#5a8a6a'}}>
+              <span>🏁 Start</span><span>📍 Week 5</span><span>🏆 Race Day</span>
+            </div>
+          </div>
+
+          <div className="display-font" style={{fontSize:'1rem',color:'#5a8a6a',letterSpacing:1,textTransform:'uppercase'}}>The Three Disciplines</div>
+
+          {[
+            {key:'swim',label:'Swim',pct:swimPct,color:'#3b82f6',target:'1.9km',done:'1.1km',Frog:SwimFrog},
+            {key:'bike',label:'Bike',pct:bikePct,color:'#f59e0b',target:'90km',done:'36km',Frog:BikeFrog},
+            {key:'run',label:'Run',pct:runPct,color:'#ef4444',target:'21.1km',done:'7.4km',Frog:RunFrog},
+          ].map(({key,label,pct,color,target,done,Frog})=>(
+            <div key={key} className="card" style={{display:'flex',alignItems:'center',gap:'1rem'}}>
+              <div style={{position:'relative',cursor:'pointer',flexShrink:0}} onClick={()=>handleFrogClick(key)}>
+                <Frog size={72}/>
+                {ripples[key] && <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',borderRadius:'50%',border:`3px solid ${color}`,width:60,height:60,animation:'ripple 1s ease-out forwards'}}/>}
+              </div>
+              <div style={{flex:1}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                  <div className="display-font" style={{fontSize:'1.1rem',color:'#e8f5e9'}}>{label}</div>
+                  <div style={{fontSize:'0.85rem',color}}>{done} <span style={{color:'#5a8a6a'}}>/ {target}</span></div>
+                </div>
+                <div className="progress-track" style={{height:10}}>
+                  <div className="progress-fill" style={{width:`${pct}%`,background:color}}/>
+                </div>
+                <button onClick={()=>logWorkout(key)} style={{
+                  marginTop:6,fontSize:'0.72rem',background:'transparent',
+                  border:`1px solid ${color}33`,color,borderRadius:99,
+                  padding:'0.2rem 0.7rem',cursor:'pointer',fontFamily:'Boogaloo,cursive'
+                }}>+ Log {label}</button>
+              </div>
+              <ProgressArc pct={pct} color={color} size={56}/>
+            </div>
+          ))}
+
+          <div className="card">
+            <div className="display-font" style={{fontSize:'1.1rem',color:'#e8f5e9',marginBottom:'0.8rem'}}>📅 This Week</div>
+            <div style={{display:'flex',gap:'0.4rem',flexWrap:'wrap',marginBottom:'0.8rem'}}>
+              {THIS_WEEK.days.map(d=>(
+                <div key={d.day} className={`day-pill ${d.done?'done':d.today?'today':d.type==='rest'?'rest':''}`}>
+                  {d.done?'✓':d.today?'→':''} {d.day}
+                </div>
+              ))}
+            </div>
+            {[
+              {label:'🏊 Swim',logged:1.8,target:3,color:'#3b82f6'},
+              {label:'🚴 Bike',logged:2.4,target:4,color:'#f59e0b'},
+              {label:'🏃 Run',logged:1.2,target:3,color:'#ef4444'},
+            ].map(({label,logged,target,color})=>(
+              <div key={label} style={{marginBottom:'0.5rem'}}>
+                <div style={{display:'flex',justifyContent:'space-between',fontSize:'0.82rem',marginBottom:3}}>
+                  <span style={{color:'#a3c4a3'}}>{label}</span>
+                  <span style={{color}}>{logged}h <span style={{color:'#5a8a6a'}}>/ {target}h</span></span>
+                </div>
+                <div className="progress-track" style={{height:7}}>
+                  <div className="progress-fill" style={{width:`${Math.min(100,(logged/target)*100)}%`,background:color}}/>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button onClick={()=>showToast(FUN_MESSAGES[Math.floor(Math.random()*FUN_MESSAGES.length)])}
+            style={{width:'100%',padding:'0.9rem',borderRadius:16,background:'transparent',border:'2px dashed #2a5a2a',color:'#5a8a6a',fontFamily:'Boogaloo,cursive',fontSize:'1rem',cursor:'pointer'}}
+            onMouseEnter={e=>{e.target.style.borderColor='#84cc16';e.target.style.color='#84cc16';}}
+            onMouseLeave={e=>{e.target.style.borderColor='#2a5a2a';e.target.style.color='#5a8a6a';}}>
+            🐸 I need some frog wisdom
+          </button>
+        </div>
+      )}
+
+      {/* ── TRAINING PLAN ── */}
+      {tab==='training' && (
+        <div className="slide-in" style={{display:'flex',flexDirection:'column',gap:'0.6rem'}}>
+          <div style={{color:'#5a8a6a',fontSize:'0.85rem',marginBottom:'0.4rem'}}>20-week Half Ironman plan · First 8 weeks shown</div>
+          {WEEKS.map(w=>(
+            <div key={w.week} className="card" style={{
+              border:w.current?'2px solid #84cc16':'1px solid #1e4a4a',
+              opacity:w.done&&!w.current?0.65:1,
+              background:w.recovery?'#0d1f2d':w.current?'#112e1a':'#112e2e'
+            }}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+                <div>
+                  <div style={{display:'flex',alignItems:'center',gap:'0.5rem',flexWrap:'wrap'}}>
+                    <div className="display-font" style={{fontSize:'1rem',color:w.current?'#84cc16':'#e8f5e9'}}>Week {w.week}</div>
+                    {w.current && <span style={{fontSize:'0.68rem',background:'#84cc16',color:'#0d2b2b',padding:'0.1rem 0.5rem',borderRadius:99,fontWeight:700}}>YOU ARE HERE</span>}
+                    {w.done&&!w.current && <span style={{color:'#22c55e'}}>✓</span>}
+                  </div>
+                  <div style={{fontSize:'0.78rem',color:'#5a8a6a',marginTop:2}}>{w.phase}</div>
+                </div>
+                <div style={{display:'flex',gap:'0.6rem',fontSize:'0.8rem',flexShrink:0}}>
+                  <span style={{color:'#3b82f6'}}>🏊{w.swim}h</span>
+                  <span style={{color:'#f59e0b'}}>🚴{w.bike}h</span>
+                  <span style={{color:'#ef4444'}}>🏃{w.run}h</span>
+                </div>
+              </div>
+              {w.current && (
+                <div style={{marginTop:'0.5rem',padding:'0.5rem',background:'#0d2b2b',borderRadius:10,fontSize:'0.78rem',color:'#84cc16'}}>
+                  🐸 "This is your week. Don't blow it, frog."
+                </div>
+              )}
+            </div>
+          ))}
+          <div style={{textAlign:'center',color:'#2a5a2a',padding:'1rem',fontSize:'0.85rem'}}>··· weeks 9–20 unlock as you progress ···</div>
+        </div>
+      )}
+
+      {/* ── MILESTONES ── */}
+      {tab==='milestones' && (
+        <div className="slide-in">
+          <div className="card" style={{marginBottom:'1rem',textAlign:'center'}}>
+            <div className="display-font" style={{fontSize:'1.3rem',color:'#f59e0b'}}>⭐ Level 4 — Puddle Jumper</div>
+            <div style={{fontSize:'0.8rem',color:'#5a8a6a',margin:'0.3rem 0 0.6rem'}}>480 / 600 XP to Level 5</div>
+            <div className="xp-bar"><div className="xp-fill" style={{width:'80%'}}/></div>
+          </div>
+
+          <div className="display-font" style={{color:'#5a8a6a',fontSize:'0.8rem',letterSpacing:1,textTransform:'uppercase',marginBottom:'0.6rem'}}>Quest Badges</div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.6rem',marginBottom:'1.2rem'}}>
+            {milestones.map(m=>(
+              <div key={m.id} className={`badge ${m.unlocked?'unlocked':'locked'}`}
+                onClick={()=>!m.unlocked&&unlockBadge(m.id)}
+                style={{cursor:m.unlocked?'default':'pointer'}}>
+                <div style={{fontSize:'2rem'}}>{m.emoji}</div>
+                <div className="display-font" style={{fontSize:'0.95rem',color:m.unlocked?'#84cc16':'#3a5a3a',textAlign:'center'}}>{m.label}</div>
+                <div style={{fontSize:'0.7rem',color:'#5a8a6a',textAlign:'center',lineHeight:1.3}}>{m.desc}</div>
+                {!m.unlocked && <div style={{fontSize:'0.62rem',color:'#2a4a2a',marginTop:2}}>tap to unlock</div>}
+                {m.unlocked && <div style={{position:'absolute',top:8,right:8,fontSize:'0.65rem',color:'#84cc16'}}>✓</div>}
+              </div>
+            ))}
+          </div>
+
+          <div className="display-font" style={{color:'#5a8a6a',fontSize:'0.8rem',letterSpacing:1,textTransform:'uppercase',marginBottom:'0.6rem'}}>Your Personal Goals</div>
+          <div style={{display:'flex',flexDirection:'column',gap:'0.5rem',marginBottom:'0.8rem'}}>
+            {customGoals.map(g=>(
+              <div key={g.id} className="card" style={{
+                display:'flex',alignItems:'center',gap:'0.8rem',padding:'0.9rem 1rem',
+                border:g.done?'1px solid #84cc16':'1px solid #1e4a4a',
+                background:g.done?'#112e1a':'#112e2e'
+              }}>
+                <button onClick={()=>toggleGoal(g.id)} style={{
+                  width:28,height:28,borderRadius:'50%',flexShrink:0,
+                  border:`2px solid ${g.done?'#84cc16':'#2a5a2a'}`,
+                  background:g.done?'#84cc16':'transparent',cursor:'pointer',
+                  fontSize:'0.85rem',display:'flex',alignItems:'center',justifyContent:'center',
+                  color:g.done?'#0d2b2b':'transparent'
+                }}>✓</button>
+                <div style={{flex:1}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'0.4rem'}}>
+                    <span style={{fontSize:'1.2rem'}}>{g.emoji}</span>
+                    <span className="display-font" style={{color:g.done?'#84cc16':'#e8f5e9',textDecoration:g.done?'line-through':'none'}}>{g.label}</span>
+                  </div>
+                  {g.desc && <div style={{fontSize:'0.75rem',color:'#5a8a6a',marginTop:2}}>{g.desc}</div>}
+                </div>
+                <button onClick={()=>setCustomGoals(gs=>gs.filter(x=>x.id!==g.id))} style={{background:'transparent',border:'none',color:'#2a5a2a',cursor:'pointer',fontSize:'1rem',padding:'0.2rem',flexShrink:0}}>✕</button>
+              </div>
+            ))}
+          </div>
+
+          {!addingGoal ? (
+            <button onClick={()=>setAddingGoal(true)} style={{
+              width:'100%',padding:'0.9rem',borderRadius:16,background:'transparent',
+              border:'2px dashed #2a5a2a',color:'#5a8a6a',fontFamily:'Boogaloo,cursive',
+              fontSize:'1rem',cursor:'pointer'
+            }}
+            onMouseEnter={e=>{e.target.style.borderColor='#84cc16';e.target.style.color='#84cc16';}}
+            onMouseLeave={e=>{e.target.style.borderColor='#2a5a2a';e.target.style.color='#5a8a6a';}}>
+              + Add your own goal
+            </button>
+          ) : (
+            <div className="card" style={{border:'2px solid #84cc16'}}>
+              <div className="display-font" style={{color:'#84cc16',marginBottom:'0.8rem'}}>New Goal</div>
+              <div style={{display:'flex',gap:'0.5rem',marginBottom:'0.5rem'}}>
+                <input value={newGoal.emoji} onChange={e=>setNewGoal(g=>({...g,emoji:e.target.value}))}
+                  style={{width:48,textAlign:'center',background:'#0d2b2b',border:'1px solid #2a5a2a',borderRadius:10,padding:'0.5rem',color:'#e8f5e9',fontSize:'1.2rem'}}/>
+                <input placeholder="Goal name *" value={newGoal.label} onChange={e=>setNewGoal(g=>({...g,label:e.target.value}))}
+                  style={{flex:1,background:'#0d2b2b',border:'1px solid #2a5a2a',borderRadius:10,padding:'0.5rem 0.8rem',color:'#e8f5e9',fontFamily:'Boogaloo,cursive',fontSize:'0.95rem'}}/>
+              </div>
+              <input placeholder="Description (optional)" value={newGoal.desc} onChange={e=>setNewGoal(g=>({...g,desc:e.target.value}))}
+                style={{width:'100%',background:'#0d2b2b',border:'1px solid #2a5a2a',borderRadius:10,padding:'0.5rem 0.8rem',color:'#e8f5e9',fontSize:'0.85rem',marginBottom:'0.8rem'}}/>
+              <div style={{display:'flex',gap:'0.5rem'}}>
+                <button onClick={addGoal} style={{flex:1,padding:'0.6rem',borderRadius:10,background:'#84cc16',border:'none',color:'#0d2b2b',fontFamily:'Boogaloo,cursive',fontSize:'1rem',cursor:'pointer'}}>Add Goal 🐸</button>
+                <button onClick={()=>setAddingGoal(false)} style={{padding:'0.6rem 1rem',borderRadius:10,background:'transparent',border:'1px solid #2a5a2a',color:'#5a8a6a',fontFamily:'Boogaloo,cursive',fontSize:'1rem',cursor:'pointer'}}>Cancel</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── STATS ── */}
+      {tab==='stats' && (
+        <div className="slide-in" style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.8rem'}}>
+            {[
+              {label:'Total Hours',value:'42.5h',icon:'⏱️',color:'#84cc16'},
+              {label:'Workouts Done',value:'34',icon:'✅',color:'#22c55e'},
+              {label:'Swim Distance',value:'12.4km',icon:'🏊',color:'#3b82f6'},
+              {label:'Bike Distance',value:'380km',icon:'🚴',color:'#f59e0b'},
+              {label:'Run Distance',value:'98km',icon:'🏃',color:'#ef4444'},
+              {label:'Current Streak',value:'3 days 🔥',icon:'🔥',color:'#f97316'},
+            ].map(s=>(
+              <div key={s.label} className="card" style={{textAlign:'center'}}>
+                <div style={{fontSize:'1.5rem',marginBottom:4}}>{s.icon}</div>
+                <div className="display-font" style={{fontSize:'1.4rem',color:s.color}}>{s.value}</div>
+                <div style={{fontSize:'0.75rem',color:'#5a8a6a'}}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+          <div className="card">
+            <div className="display-font" style={{fontSize:'1rem',color:'#e8f5e9',marginBottom:'0.8rem'}}>📈 Discipline Progress</div>
+            <div style={{display:'flex',justifyContent:'space-around',padding:'0.5rem 0'}}>
+              {[{label:'Swim',pct:swimPct,color:'#3b82f6'},{label:'Bike',pct:bikePct,color:'#f59e0b'},{label:'Run',pct:runPct,color:'#ef4444'}].map(d=>(
+                <div key={d.label} style={{textAlign:'center'}}>
+                  <ProgressArc pct={d.pct} color={d.color} size={80}/>
+                  <div className="display-font" style={{fontSize:'0.9rem',color:'#a3c4a3',marginTop:4}}>{d.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="card" style={{border:'2px solid #1a3a1a'}}>
+            <div style={{fontSize:'1.5rem',marginBottom:'0.5rem'}}>🐸</div>
+            <div className="display-font" style={{color:'#84cc16',fontSize:'1rem',marginBottom:'0.3rem'}}>Frog Analysis</div>
+            <div style={{fontSize:'0.85rem',color:'#a3c4a3',lineHeight:1.6}}>
+              "Strong swim base, bike coming along nicely. Run is your weakest link — consider one more long run per week. You're on track to finish comfortably. The frog approves."
+            </div>
+          </div>
+          <div className="card" style={{border:'2px dashed #2a5a2a'}}>
+            <div className="display-font" style={{color:'#5a8a6a',marginBottom:'0.6rem',fontSize:'0.8rem',textTransform:'uppercase',letterSpacing:1}}>🎮 Preview All Surprises</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.4rem'}}>
+              {[['🏊 Swim Flood','swim'],['🚴 Bike Zoom','bike'],['🏃 Run Shake','run'],['🏆 Badge Pop','badge'],['🎉 50% Party','party'],['💨 Burp','burp']].map(([label,type])=>(
+                <button key={type} onClick={()=>trigger(type, type==='badge'?MILESTONES_DATA[4]:null)}
+                  style={{padding:'0.5rem',borderRadius:10,background:'#0d2b2b',border:'1px solid #2a5a2a',color:'#84cc16',fontFamily:'Boogaloo,cursive',fontSize:'0.85rem',cursor:'pointer'}}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CELEBRATIONS ── */}
+      {celebration==='swim'  && <WaterFlood onDone={()=>setCelebration(null)}/>}
+      {celebration==='bike'  && <BikeZoom onDone={()=>setCelebration(null)}/>}
+      {celebration==='run'   && <RunCelebration onDone={()=>setCelebration(null)}/>}
+      {celebration==='badge' && <BadgeCelebration badge={celebData} onDone={()=>setCelebration(null)}/>}
+      {celebration==='party' && <PartyOverlay onDone={()=>setCelebration(null)}/>}
+      {celebration==='burp'  && <BurpOverlay onDone={()=>setCelebration(null)}/>}
+
+      <PeekabooFrog/>
+      <SleepFrog/>
+
+      {toast && (
+        <div className="toast">
+          <div style={{fontSize:'0.9rem',color:'#a3c4a3',lineHeight:1.5}}>{toast}</div>
+        </div>
+      )}
+
+      <div style={{textAlign:'center',padding:'2rem 0 1rem',color:'#2a5a2a',fontSize:'0.78rem'}}>
+        🐸 Built with lily pad energy · Tap a frog for wisdom
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.render(<App/>, document.getElementById('root'));
+</script>
+</body>
+</html>
