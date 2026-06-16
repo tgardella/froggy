@@ -117,14 +117,14 @@ const RACE_DATE = new Date('2024-12-01');
 const CONFETTI_COLORS = ['#84cc16','#f59e0b','#ef4444','#3b82f6','#a855f7','#ec4899','#22c55e','#ffffff'];
 const PEEK_LINES = [
   "Ribbit.", "Hop to it!", "Frogs rule, bugs drool.",
-  "Back in my tadpole days I could jump 8 inches.",
-  "Have you hydrated? Frogs absorb water through their skin. Just saying.",
+  "Back in my tadpole days I could jump 8 inches!",
+  "Have you hydrated?",
   "I believe in you. Mostly.", "Less scrolling, more training.",
   "Did someone say... FLY? 👅", "The lily pad won't train itself.",
   "You miss 100% of the swims you don't swim. — Frog Gretzky",
   "My cousin ran a 5k once. He didn't train. Don't be my cousin.",
   "Ribbit ribbit ribbit. That means 'go faster' in frog.",
-  "I've seen tadpoles work harder. Just kidding. You're doing great.",
+  "I've seen tadpoles run faster than you!",
 ];
 const FUN_MESSAGES = [
   "🐸 Ribbit! Your legs aren't tired, they're just pretending.",
@@ -132,9 +132,9 @@ const FUN_MESSAGES = [
   "🐸 You're not slow, you're just... building suspense.",
   "🐸 Every swim stroke is one less stroke of regret on race day.",
   "🐸 Your future self is watching. Don't embarrass him.",
-  "🐸 The couch called. You didn't answer. Legend.",
+  "🐸 The couch called, why didn't answer?",
   "🐸 Leap first, think later. That's the frog way.",
-  "🐸 Fun fact: frogs never quit. Coincidence? We think not.",
+  "🐸 Fun fact: frogs never quit. Are you a frog?",
 ];
 const MILESTONES_DATA = [
   { id:1, emoji:'🐣', label:'First Splash', desc:'Completed first swim session', unlocked:true },
@@ -437,7 +437,7 @@ const BikeZoom = ({ onDone }) => {
   useEffect(() => { setTimeout(onDone, 2200); }, []);
   return (
     <div className="bike-zoom" style={{display:'flex',alignItems:'center',gap:'0.6rem',whiteSpace:'nowrap'}}>
-      <span style={{fontFamily:'Boogaloo,cursive',color:'#f59e0b',fontSize:'1.6rem'}}>WHOOOOSH 💨</span>
+      <span style={{fontFamily:'Boogaloo,cursive',color:'#f59e0b',fontSize:'1.6rem'}}>FART 💨</span>
       <BikeFrog size={80}/>
     </div>
   );
@@ -650,7 +650,7 @@ const App = () => {
         <div className="slide-in" style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
           <div>
             <div className="display-font" style={{color:'#5a8a6a',fontSize:'0.8rem',letterSpacing:1,textTransform:'uppercase',marginBottom:'0.5rem'}}>
-              🪰 Catch the flies while you wait
+              🪰 Catch the flies while you poop
             </div>
             <LilyPadGame onBurp={()=>trigger('burp')}/>
           </div>
@@ -934,7 +934,7 @@ const App = () => {
       )}
 
       <div style={{textAlign:'center',padding:'2rem 0 1rem',color:'#2a5a2a',fontSize:'0.78rem'}}>
-        🐸 Built with lily pad energy · Tap a frog for wisdom
+        🐸 Poke a bitch ass frog for wisdom
       </div>
     </div>
   );
